@@ -132,3 +132,18 @@ database:
 Guest-facing sends should remain behind an explicit inbox connector and approval
 state machine. The current branch intentionally creates review records instead
 of sending messages directly.
+
+## Lixus Integration Contract
+
+`src/lib/integrations/lixus-contract.ts` defines the boundary between the real
+Lixus app and this agent layer. It maps an inbound Lixus message into
+`GuestMessageContext` and keeps the write policy explicit:
+
+- suggested tasks may be created,
+- approval items may be created,
+- report signals may be created,
+- guest-facing sends are hard-disabled.
+
+Claude should use this contract when wiring the real inbox/task/report models so
+that the agent layer does not depend on UI-specific shapes or accidentally send
+guest messages.

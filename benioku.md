@@ -38,6 +38,9 @@ Bu nedenle amac misafir mesajini anlayip operasyonel aksiyona cevirmek, riskli s
   - insan taslagi approve/reject/edit edebilir
   - her karar `OperationEvent` olarak loglanir
   - sonuc yine outbound send'i `blocked` dondurur
+- Lixus integration contract:
+  - gercek Lixus inbox verisini agent context'ine map'ler
+  - write policy icinde guest send'i tip seviyesinde `false` tutar
 - Tasks sayfasinda demo panel:
   - plan olustur
   - dry-run/persist sec
@@ -73,6 +76,7 @@ Boylece sistem hem operasyonel olur hem de kontrolsuz AI davranisi azaltir.
 - `src/lib/agents/operation-plan.ts`
 - `src/lib/agents/operation-executor.ts`
 - `src/lib/agents/approval-workflow.ts`
+- `src/lib/integrations/lixus-contract.ts`
 - `src/app/api/agents/operation-plan/route.ts`
 - `src/app/api/agents/execute-operation-plan/route.ts`
 - `src/app/api/agents/approval-decision/route.ts`
