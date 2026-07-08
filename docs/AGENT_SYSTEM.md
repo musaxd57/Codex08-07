@@ -147,3 +147,18 @@ Lixus app and this agent layer. It maps an inbound Lixus message into
 Claude should use this contract when wiring the real inbox/task/report models so
 that the agent layer does not depend on UI-specific shapes or accidentally send
 guest messages.
+
+`src/lib/integrations/lixus-inbound-runner.ts` adds the end-to-end runner for
+real inbox events:
+
+```text
+Lixus inbound message
+  -> GuestMessageContext
+  -> analysis
+  -> operation plan
+  -> write-policy guard
+  -> dry-run or persist execution
+```
+
+The corresponding API route is `POST /api/agents/lixus-inbound`. It defaults to
+`dry_run` and always returns `outbound.status = "blocked"`.

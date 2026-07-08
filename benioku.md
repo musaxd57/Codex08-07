@@ -41,6 +41,10 @@ Bu nedenle amac misafir mesajini anlayip operasyonel aksiyona cevirmek, riskli s
 - Lixus integration contract:
   - gercek Lixus inbox verisini agent context'ine map'ler
   - write policy icinde guest send'i tip seviyesinde `false` tutar
+- Lixus inbound runner:
+  - gercek inbox event'ini analiz + plan + execution akisina sokar
+  - default `dry_run`
+  - outbound sonucu her zaman `blocked`
 - Tasks sayfasinda demo panel:
   - plan olustur
   - dry-run/persist sec
@@ -77,9 +81,11 @@ Boylece sistem hem operasyonel olur hem de kontrolsuz AI davranisi azaltir.
 - `src/lib/agents/operation-executor.ts`
 - `src/lib/agents/approval-workflow.ts`
 - `src/lib/integrations/lixus-contract.ts`
+- `src/lib/integrations/lixus-inbound-runner.ts`
 - `src/app/api/agents/operation-plan/route.ts`
 - `src/app/api/agents/execute-operation-plan/route.ts`
 - `src/app/api/agents/approval-decision/route.ts`
+- `src/app/api/agents/lixus-inbound/route.ts`
 - `src/app/tasks/operation-plan-panel.tsx`
 - `prisma/schema.prisma`
 - `docs/AGENT_SYSTEM.md`
