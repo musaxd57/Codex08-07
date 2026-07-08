@@ -9,6 +9,7 @@ import {
   lixusInboundMessageSchema,
   toGuestMessageContext
 } from "@/lib/integrations/lixus-contract";
+import { summarizeInboundRun } from "@/lib/integrations/operator-summary";
 
 export const lixusInboundRunRequestSchema = z.object({
   message: lixusInboundMessageSchema,
@@ -66,17 +67,24 @@ export async function runLixusInboundAgent(input: LixusInboundRunRequest) {
     mode: request.mode,
     plan
   });
+  const outbound = {
+    status: "blocked" as const,
+    reason: "Guest-facing send is disabled in the Lixus integration runner."
+  };
 
   return {
     context,
     analysis,
     plan,
     execution,
+    operatorSummary: summarizeInboundRun({
+      analysis,
+      plan,
+      execution,
+      outbound
+    }),
     run,
     writePolicy,
-    outbound: {
-      status: "blocked" as const,
-      reason: "Guest-facing send is disabled in the Lixus integration runner."
-    }
+    outbound
   };
 }

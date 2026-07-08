@@ -243,6 +243,45 @@ button {
   color: var(--text);
 }
 
+.summary-grid strong.low {
+  color: var(--green);
+}
+
+.summary-grid strong.medium {
+  color: var(--amber);
+}
+
+.summary-grid strong.high {
+  color: var(--red);
+}
+
+.checkbox-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--text);
+}
+
+.checkbox-row input {
+  width: auto;
+}
+
+.checkbox-row.disabled {
+  color: var(--muted);
+}
+
+details {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #10141b;
+  padding: 12px;
+}
+
+summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
 @media (max-width: 860px) {
   .shell,
   .grid.two {

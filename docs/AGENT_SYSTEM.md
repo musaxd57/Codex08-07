@@ -94,7 +94,7 @@ Current persistent tools:
 
 | Tool | Behavior |
 | --- | --- |
-| `create_task_suggestion` | Creates a `Task` with `SUGGESTED` status. |
+| `create_task_suggestion` | Creates a `Task` with `SUGGESTED` status, unless an active task already matches the dedupe key. |
 | `create_approval_item` | Creates an `ApprovalItem` for human review. |
 | `draft_guest_reply` | Queues the draft as an `ApprovalItem`; it does not send guest-facing messages yet. |
 | `notify_operations_team` | Creates an internal `OperationEvent`. |
@@ -103,6 +103,10 @@ Current persistent tools:
 Unconnected tools are skipped with a reason instead of failing the whole plan.
 This lets the system grow tool-by-tool without pretending that risky production
 integrations already exist.
+
+Task creation is idempotent when `dedupeKey` is present. The executor checks for
+an active `SUGGESTED`, `OPEN`, or `IN_PROGRESS` task with the same tenant and
+dedupe key before creating a new one.
 
 ## Approval Decision Workflow
 
@@ -162,3 +166,29 @@ Lixus inbound message
 
 The corresponding API route is `POST /api/agents/lixus-inbound`. It defaults to
 `dry_run` and always returns `outbound.status = "blocked"`.
+
+## Inbox Demo UI
+
+`/inbox` is the operator-facing demo for the Lixus inbound runner. It lets a
+developer paste a Lixus-like inbox payload, toggle safe write policy flags, and
+run the agent in `dry_run` before touching production persistence.
+
+The page shows:
+
+- risk, mode, executed, human review, and skipped counters,
+- a timeline of planned/executed internal actions,
+- policy or connector warnings,
+- the raw response for debugging.
+
+The guest-facing send checkbox is rendered disabled on purpose. It is not a UI
+feature flag; it mirrors the backend contract that outbound sends are blocked.
+
+## Readiness Check
+
+`src/lib/integrations/readiness-check.ts` produces a small production readiness
+report for the agent layer. It checks whether database and LiteLLM environment
+variables are present, whether write policy permits internal records, and
+whether guest-facing send is still disabled.
+
+The API route is `GET /api/agents/readiness`, and `/readiness` renders the same
+information for manual review.

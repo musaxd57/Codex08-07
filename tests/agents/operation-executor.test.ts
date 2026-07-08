@@ -7,7 +7,8 @@ const db = vi.hoisted(() => ({
   agentToolRunCreate: vi.fn(),
   operationEventCreate: vi.fn(),
   reportSignalCreate: vi.fn(),
-  taskCreate: vi.fn()
+  taskCreate: vi.fn(),
+  taskFindFirst: vi.fn()
 }));
 
 vi.mock("@/lib/db/prisma", () => ({
@@ -16,7 +17,10 @@ vi.mock("@/lib/db/prisma", () => ({
     agentToolRun: { create: db.agentToolRunCreate },
     operationEvent: { create: db.operationEventCreate },
     reportSignal: { create: db.reportSignalCreate },
-    task: { create: db.taskCreate }
+    task: {
+      create: db.taskCreate,
+      findFirst: db.taskFindFirst
+    }
   }
 }));
 
@@ -42,6 +46,7 @@ function plan(overrides: Partial<OperationPlan> = {}): OperationPlan {
           category: "CHECK_IN",
           priority: "URGENT",
           riskLevel: "HIGH",
+          dedupeKey: "property-1:check-in:door-code",
           confidence: 0.91
         }
       },
@@ -87,6 +92,7 @@ function plan(overrides: Partial<OperationPlan> = {}): OperationPlan {
 describe("operation executor", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    db.taskFindFirst.mockResolvedValue(null);
     db.taskCreate.mockResolvedValue({ id: "task-1" });
     db.approvalItemCreate.mockResolvedValue({ id: "approval-1" });
     db.operationEventCreate.mockResolvedValue({ id: "event-1" });
@@ -131,10 +137,46 @@ describe("operation executor", () => {
         data: expect.objectContaining({
           category: "CHECK_IN",
           priority: "URGENT",
-          riskLevel: "HIGH"
+          riskLevel: "HIGH",
+          dedupeKey: "property-1:check-in:door-code"
         })
       })
     );
+  });
+
+  it("skips duplicate task creation when an active task matches the dedupe key", async () => {
+    db.taskFindFirst.mockResolvedValueOnce({ id: "existing-task-1" });
+
+    const result = await executeOperationPlan({
+      tenantId: "tenant-1",
+      mode: "persist",
+      plan: plan({
+        steps: [
+          {
+            tool: "create_task_suggestion",
+            title: "Door code urgent check",
+            reason: "Guest is locked outside.",
+            status: "safe_to_automate",
+            payload: {
+              title: "Door code urgent check",
+              description: "Guest cannot enter the property.",
+              category: "CHECK_IN",
+              priority: "URGENT",
+              riskLevel: "HIGH",
+              dedupeKey: "property-1:check-in:door-code"
+            }
+          }
+        ]
+      })
+    });
+
+    expect(result.executedCount).toBe(0);
+    expect(result.skippedCount).toBe(1);
+    expect(result.results[0]).toMatchObject({
+      skipped: true,
+      created: { taskId: "existing-task-1" }
+    });
+    expect(db.taskCreate).not.toHaveBeenCalled();
   });
 
   it("queues safe guest reply drafts instead of sending them without an inbox connector", async () => {

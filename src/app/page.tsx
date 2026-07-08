@@ -2,27 +2,34 @@ export default function HomePage() {
   return (
     <div className="page">
       <section>
-        <p className="eyebrow">Büyük Agent Sistemi</p>
-        <h1>Misafir mesajından operasyona giden kontrollü agent katmanı</h1>
+        <p className="eyebrow">Buyuk Agent Sistemi</p>
+        <h1>Misafir mesajindan operasyona giden kontrollu agent katmani</h1>
         <p className="muted">
-          Bu branch Lixus AI için büyük agent sisteminin ilk omurgasını ekler: LiteLLM
-          gateway, görev çıkarma, risk/onay kapısı ve operasyon raporu agentları.
+          Bu branch Lixus AI icin buyuk agent sisteminin ilk omurgasini ekler: LiteLLM gateway,
+          gorev cikarma, risk/onay kapisi ve operasyon raporu agentlari.
         </p>
       </section>
 
       <div className="grid two">
         <div className="card">
-          <h2>Görev Agentı</h2>
+          <h2>Inbox Runner</h2>
           <p className="muted">
-            Misafir mesajından temizlik, bakım, check-in ve şikayet görevlerini çıkarır.
-            Riskli konularda misafire otomatik cevap göndermeden insan onayına düşer.
+            Gercek Lixus inbox event'ini agent context'ine cevirir, plan uretir ve outbound send'i kapali tutarak
+            dry-run sonucunu operator icin okunur hale getirir.
           </p>
         </div>
         <div className="card">
-          <h2>Rapor Agentı</h2>
+          <h2>Gorev Agenti</h2>
           <p className="muted">
-            Görev, mesaj ve risk metriklerinden haftalık operasyon içgörüsü üretir.
-            Mülk bazlı tekrar eden sorunları rapora taşır.
+            Misafir mesajindan temizlik, bakim, check-in ve sikayet gorevlerini cikarir.
+            Riskli konularda misafire otomatik cevap gondermeden insan onayina duser.
+          </p>
+        </div>
+        <div className="card">
+          <h2>Rapor Agenti</h2>
+          <p className="muted">
+            Gorev, mesaj ve risk metriklerinden haftalik operasyon icgorusu uretir.
+            Mulk bazli tekrar eden sorunlari rapora tasir.
           </p>
         </div>
       </div>

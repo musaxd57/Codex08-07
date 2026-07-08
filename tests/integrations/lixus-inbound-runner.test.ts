@@ -71,6 +71,7 @@ describe("lixus inbound runner", () => {
     expect(result.context.sourceMessageId).toBe("message-1");
     expect(result.plan.steps.length).toBeGreaterThan(0);
     expect(result.execution.mode).toBe("dry_run");
+    expect(result.operatorSummary.actions.length).toBeGreaterThan(0);
     expect(result.outbound.status).toBe("blocked");
   });
 });

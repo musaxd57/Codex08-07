@@ -210,6 +210,30 @@ async function executePersistedStep(
   }
 
   if (step.tool === "create_task_suggestion") {
+    const dedupeKey = getString(payload, "dedupeKey");
+    const existingTask = dedupeKey
+      ? await prisma.task.findFirst({
+          where: {
+            tenantId: request.tenantId,
+            dedupeKey,
+            status: {
+              in: ["SUGGESTED", "OPEN", "IN_PROGRESS"]
+            }
+          }
+        })
+      : null;
+
+    if (existingTask) {
+      return {
+        tool: step.tool,
+        title: step.title,
+        status: "skipped",
+        skipped: true,
+        skipReason: "Existing active task matched the operation dedupe key.",
+        created: { taskId: existingTask.id }
+      };
+    }
+
     const task = await prisma.task.create({
       data: {
         tenantId: request.tenantId,
@@ -225,6 +249,7 @@ async function executePersistedStep(
         slaMinutes: getNumber(payload, "slaMinutes"),
         confidence: getNumber(payload, "confidence"),
         aiReason: step.reason,
+        dedupeKey,
         status: "SUGGESTED"
       }
     });
